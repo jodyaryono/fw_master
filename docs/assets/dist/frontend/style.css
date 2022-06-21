@@ -1,0 +1,12 @@
+.font-logo {
+  font-weight: 300!important;
+  font-style: italic!important;
+  color: #ee4323!important;
+}
+.navbar-default .navbar-nav>li>a, .navbar-default .navbar-text {
+  color: #f9f7f7;
+}
+.logo_nav {
+  color: #f1efe3;
+  text-decoration: none;
+}

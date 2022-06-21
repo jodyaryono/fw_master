@@ -1,0 +1,11 @@
+{
+    "require": {
+        "firebase/php-jwt": "^3.0",
+        "google/recaptcha": "~1.1",
+        "league/csv": "^7.0",
+        "zircote/swagger-php": "^2.0"
+    },
+    "require-dev": {
+        "kenjis/ci-phpunit-test": "^0.17.3"
+    }
+}
