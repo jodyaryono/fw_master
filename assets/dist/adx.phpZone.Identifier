@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://www.adminer.org/
+HostUrl=https://github-releases.githubusercontent.com/627735/48975e80-6972-11eb-8258-64fd3b987344?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20210208%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20210208T191518Z&X-Amz-Expires=300&X-Amz-Signature=f75653b4ae55223f778cc54f9ce058ebd59af59f9cc9553bcc6394db750a844a&X-Amz-SignedHeaders=host&actor_id=6079404&key_id=0&repo_id=627735&response-content-disposition=attachment%3B%20filename%3Dadminer-4.7.9.php&response-content-type=application%2Foctet-stream

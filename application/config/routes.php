@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
@@ -49,7 +49,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['default_controller'] = 'home';
+$route['default_controller'] = 'admin/home';
 $route['404_override'] = 'errors/page_missing';
 $route['translate_uri_dashes'] = FALSE;
 
@@ -79,8 +79,8 @@ $route['^(\w{2})$'] = $route['default_controller'];
 |	- [PUT]		/api/users/1/subitem ==> Users Controller's subitem_put($parent_id)
 |	- [DELETE]	/api/users/1/subitem ==> Users Controller's subitem_delete($parent_id)
 */
-$route['api/(:any)/(:num)']				= 'api/$1/id/$2';
-$route['api/(:any)/(:num)/(:any)']		= 'api/$1/$3/$2';
+$route['api/(:any)/(:num)']                = 'api/$1/id/$2';
+$route['api/(:any)/(:num)/(:any)']        = 'api/$1/$3/$2';
 
 /*
 | -------------------------------------------------------------------------

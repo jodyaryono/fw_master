@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
@@ -37,8 +37,7 @@ $config['ci_bootstrap'] = array(
 			'assets/dist/admin/lib.min.js',
 			'assets/dist/admin/app.min.js'
 		),
-		'foot'	=> array(
-		),
+		'foot'	=> array(),
 	),
 
 	// Default stylesheets to embed at page head
@@ -54,8 +53,7 @@ $config['ci_bootstrap'] = array(
 	'body_class' => '',
 
 	// Multilingual settings
-	'languages' => array(
-	),
+	'languages' => array(),
 
 	// Menu items
 	'menu' => array(
@@ -64,52 +62,23 @@ $config['ci_bootstrap'] = array(
 			'url'		=> '',
 			'icon'		=> 'fa fa-home',
 		),
-		'user' => array(
-			'name'		=> 'Users',
-			'url'		=> 'user',
+		'qrcode_app' => array(
+			'name'		=> 'QR Code',
+			'url'		=> 'qrcode_app',
 			'icon'		=> 'fa fa-users',
 			'children'  => array(
-				'List'			=> 'user',
-				'Create'		=> 'user/create',
-				'User Groups'	=> 'user/group',
+				'Even/Acara'			  => 'qrcode_app/batch',
+				//'QR Generator'			=> 'qrcode_app/generator',
+				'Data QR'						=> 'qrcode_app/data',
+				'Test QR'						=> 'qrcode_app/test',
+				//'Cetak QR'					=> 'qrcode_app/cetak',
+				'Scan' 							=> 'qrcode_app/scan',
+				'Entry'							=> 'qrcode_app/entry',
+				'Monitoring'				=> 'monitoring',
+				'Sudah Scan'				=> 'qrcode_app/sudah_scan',
+				'Belum Scan'				=> 'qrcode_app/belum_scan',
 			)
 		),
-
-		'absensi' => array(
-			'name'		=> 'Absensi',
-			'url'		=> 'absensi',
-			'icon'		=> 'fa fa-users',
-			'children'  => array(
-				'Absensi'		=> 'absensi',
-				'Daftar'		=> 'absensi/absensi_list',
-			)
-		),
-		'buku' => array(
-			'name'		=> 'Buku',
-			'url'		=> 'buku',
-			'icon'		=> 'fa fa-users',
-			'children'  => array(
-				'Buku'		  => 'buku',
-			)
-		),
-		'anggota' => array(
-			'name'		=> 'Anggota',
-			'url'		=> 'anggota',
-			'icon'		=> 'fa fa-users',
-			'children'  => array(
-				'Anggota'		  => 'anggota',
-			)
-		),
-		'transaksi' => array(
-			'name'		=> 'Transaksi',
-			'url'		=> 'transaksi',
-			'icon'		=> 'fa fa-users',
-			'children'  => array(
-				'Peminjaman'		  => 'transaksi/peminjaman',
-				'Pengembalian'		  => 'transaksi/pengembalian',
-			)
-		),
-
 
 
 		'panel' => array(
@@ -166,29 +135,7 @@ $config['ci_bootstrap'] = array(
 	),
 
 	// Useful links to display at bottom of sidemenu
-	'useful_links' => array(
-		array(
-			'auth'		=> array('webmaster', 'admin', 'manager', 'staff'),
-			'name'		=> 'Frontend Website',
-			'url'		=> '',
-			'target'	=> '_blank',
-			'color'		=> 'text-aqua'
-		),
-		array(
-			'auth'		=> array('webmaster', 'admin'),
-			'name'		=> 'API Site',
-			'url'		=> 'api',
-			'target'	=> '_blank',
-			'color'		=> 'text-orange'
-		),
-		array(
-			'auth'		=> array('webmaster', 'admin', 'manager', 'staff'),
-			'name'		=> 'Github Repo',
-			'url'		=> CI_BOOTSTRAP_REPO,
-			'target'	=> '_blank',
-			'color'		=> 'text-green'
-		),
-	),
+	'useful_links' => array(),
 
 	// Debug tools
 	'debug' => array(

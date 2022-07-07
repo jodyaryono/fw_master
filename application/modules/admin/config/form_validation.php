@@ -7,7 +7,27 @@
  */
 
 $config = array(
-
+	'qrcode_app/test' => array(
+		array(
+			'field'		=> 'qrcode',
+			'label'		=> 'QR CODE',
+			'rules'		=> 'required',
+		),
+	),
+	'qrcode_app/scan' => array(
+		array(
+			'field'		=> 'qrcode',
+			'label'		=> 'QR CODE',
+			'rules'		=> 'required',
+		),
+	),
+	'qrcode_app/entry' => array(
+		array(
+			'field'		=> 'qrcode',
+			'label'		=> 'QR CODE',
+			'rules'		=> 'required',
+		),
+	),
 	// Admin User Login
 	'login/index' => array(
 		array(
@@ -75,7 +95,7 @@ $config = array(
 		array(
 			'field'		=> 'username',
 			'label'		=> 'Username',
-			'rules'		=> 'required|is_unique[users.username]',
+			'rules'		=> 'required',
 		),
 		array(
 			'field'		=> 'first_name',
