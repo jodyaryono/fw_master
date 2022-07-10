@@ -96,7 +96,7 @@ class Qrcode_app extends Admin_Controller
             $this->system_message->set_error($errors);
           } else {
             if (!$useCoupon) {
-              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi);
+              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi, $isAllowedList->kantong);
               $msg = "Kupon berhasil digunakan";
               $this->system_message->set_success($msg);
             } else {
@@ -134,7 +134,7 @@ class Qrcode_app extends Admin_Controller
             $this->system_message->set_error($errors);
           } else {
             if (!$useCoupon) {
-              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi);
+              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi, $isAllowedList->kantong);
               $msg = "Kupon berhasil digunakan";
               $this->system_message->set_success($msg);
             } else {
@@ -160,6 +160,7 @@ class Qrcode_app extends Admin_Controller
           $current = date('Y-m-d H:i:s');
           $now = strtotime($current);
           $allowed = strtotime($isAllowedList->start_datetime);
+          $jenis = $isAllowedList->source;
 
           if ($now < $allowed) {
             $errors = "Subhanallah Afawan, Anda belum waktunya Scan Anda dapat mulai scan $isAllowedList->start_datetime";
@@ -172,7 +173,7 @@ class Qrcode_app extends Admin_Controller
             $this->system_message->set_error($errors);
           } else {
             if (!$useCoupon) {
-              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi);
+              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi, $isAllowedList->kantong);
               $msg = "Kupon berhasil Digunakan";
               $this->system_message->set_success($msg);
             } else {

@@ -3,19 +3,41 @@
 class Qrcode_m extends MY_Model
 {
 
-  
-  public function monitoring()
+
+  public function monitoringNonMRBJ()
   {
     $sql = "SELECT zl.lokasi,zs.source,COUNT(zs.id)kupon,active,IFNULL(lc.digunakan,0)digunakan,(COUNT(zs.id)- IFNULL(lc.digunakan,0))sisa
-    ,IFNULL(lc.digunakan,0)/COUNT(zs.id)*100 AS progress
+    ,IFNULL(lc.digunakan,0)/COUNT(zs.id)*100 AS progress,
+    sum(kantong) kantong,
+    IFNULL(digunakan_kantong,0)digunakan_kantong
      FROM zis_allowscan zs LEFT JOIN zis_location zl ON zs.lokasi=zl.id 
     
     LEFT JOIN (
-    SELECT source,lokasi,COUNT(*)digunakan FROM zis_distribution
+    SELECT source,lokasi,count(*)digunakan,SUM(kantong)digunakan_kantong FROM zis_distribution
     GROUP BY source,lokasi
-    )lc ON  lc.lokasi=zl.id
+    )lc ON  lc.lokasi=zl.id AND zs.source = lc.source 
     
-    GROUP BY zl.lokasi,zs.source,source";
+    WHERE zl.id<>1
+    
+    GROUP BY zl.lokasi,zs.source,source ORDER BY zl.id";
+    return $this->db->query($sql)->result();
+  }
+  public function monitoring()
+  {
+    $sql = "SELECT zl.lokasi,zs.source,COUNT(zs.id)kupon,active,IFNULL(lc.digunakan,0)digunakan,(COUNT(zs.id)- IFNULL(lc.digunakan,0))sisa
+    ,IFNULL(lc.digunakan,0)/COUNT(zs.id)*100 AS progress,
+    sum(kantong) kantong,
+    IFNULL(digunakan_kantong,0)digunakan_kantong
+     FROM zis_allowscan zs LEFT JOIN zis_location zl ON zs.lokasi=zl.id 
+    
+    LEFT JOIN (
+    SELECT source,lokasi,count(*)digunakan,SUM(kantong)digunakan_kantong FROM zis_distribution
+    GROUP BY source,lokasi
+    )lc ON  lc.lokasi=zl.id AND zs.source = lc.source 
+    
+    WHERE zl.id=1
+    
+    GROUP BY zl.lokasi,zs.source,source ORDER BY zl.id";
     return $this->db->query($sql)->result();
   }
   public function isAllowed($qrcode)
@@ -34,7 +56,7 @@ class Qrcode_m extends MY_Model
     $this->db->update('zis_distribution', $arr);
   }
 
-  public function useCoupon($qrcode, $source, $lokasi)
+  public function useCoupon($qrcode, $source, $lokasi, $kantong)
   {
     $user = $this->ion_auth->user()->row();
     $arr = array(
@@ -44,7 +66,8 @@ class Qrcode_m extends MY_Model
       'user_id' => $user->id,
       'scan' => 1,
       'lokasi' => $lokasi,
-      'last_scan' => date('Y-m-d H:i:s')
+      'last_scan' => date('Y-m-d H:i:s'),
+      'kantong' => $kantong
     );
     $this->db->insert('zis_distribution', $arr);
   }

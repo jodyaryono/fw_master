@@ -16,13 +16,15 @@ class Monitoring extends MY_Controller
   {
 
     $this->mViewData['d'] = $this->Qrcode_m->monitoring();
+    $this->mViewData['d2'] = $this->Qrcode_m->monitoringNonMRBJ();
+
     $this->render('qr_monitoring', 'empty');
   }
 
   public function timestamp()
   {
     date_default_timezone_set('Asia/Jakarta'); //Menyesuaikan waktu dengan tempat kita tinggal
-    echo $timestamp = date('H:i:s');
+    echo $timestamp = date('d-m-Y H:i:s');
   }
   function monitoring_iduladha14140()
   {

@@ -155,7 +155,9 @@
                                         <td>&nbsp;:&nbsp;</td>
                                         <td>
                                             <h1><b>
-                                                    <?= $d['jumlah_bungkus'] ?></b></h1>
+                                                    <?= $d['jumlah_bungkus'] ?>
+                                                </b>
+                                            </h1>
                                         </td>
                                     </tr>
 
@@ -163,7 +165,7 @@
                                 </table>
                             </div>
 
-                            <?php elseif ($jenis == "KUPON") : ?>
+                            <?php elseif ($jenis == "KUPON" || $jenis == "BANK INFAQ") : ?>
                             <div class="col-md-12">
                                 <table cellpadding="5">
                                     <tr>
@@ -186,6 +188,7 @@
                                         <td>&nbsp;:&nbsp;</td>
                                         <td><b><?= $d['qr'] ?></b></td>
                                     </tr>
+                                    <?php if ($jenis == "BANK INFAQ") : ?>
                                     <tr>
                                         <td>Special1 </td>
                                         <td>&nbsp;:&nbsp;</td>
@@ -211,6 +214,17 @@
                                         <td>&nbsp;:&nbsp;</td>
                                         <td><b><?= $d['special5'] ?></b></td>
                                     </tr>
+                                    <?php endif; ?>
+                                    <?php if ($jenis == "KUPON") : ?>
+                                    <tr>
+                                        <td>Jumlah Kantong </td>
+                                        <td>&nbsp;:&nbsp;</td>
+                                        <td>
+                                            <h1><b><?= $d['special1'] ?> Kantong</b></h1>
+                                        </td>
+                                    </tr>
+                                    <?php endif; ?>
+                                </table>
                             </div>
 
                             <?php endif; ?>
