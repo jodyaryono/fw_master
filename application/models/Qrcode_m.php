@@ -3,6 +3,59 @@
 class Qrcode_m extends MY_Model
 {
 
+  
+  public function monitoring()
+  {
+    $sql = "SELECT zl.lokasi,zs.source,COUNT(zs.id)kupon,active,IFNULL(lc.digunakan,0)digunakan,(COUNT(zs.id)- IFNULL(lc.digunakan,0))sisa
+    ,IFNULL(lc.digunakan,0)/COUNT(zs.id)*100 AS progress
+     FROM zis_allowscan zs LEFT JOIN zis_location zl ON zs.lokasi=zl.id 
+    
+    LEFT JOIN (
+    SELECT source,lokasi,COUNT(*)digunakan FROM zis_distribution
+    GROUP BY source,lokasi
+    )lc ON  lc.lokasi=zl.id
+    
+    GROUP BY zl.lokasi,zs.source,source";
+    return $this->db->query($sql)->result();
+  }
+  public function isAllowed($qrcode)
+  {
+    $sql = "SELECT *,zl.id id_lokasi FROM zis_allowscan zs JOIN zis_location zl ON zs.lokasi=zl.id WHERE qrcode='$qrcode'";
+    return $this->db->query($sql)->row();
+  }
+
+  public function updateScan($qrcode, $totscan)
+  {
+    $arr = array(
+      'scan' => $totscan,
+      'last_scan' => date('Y-m-d H:i:s')
+    );
+    $this->db->where('qrcode', $qrcode);
+    $this->db->update('zis_distribution', $arr);
+  }
+
+  public function useCoupon($qrcode, $source, $lokasi)
+  {
+    $user = $this->ion_auth->user()->row();
+    $arr = array(
+      'txn_datetime' => date('Y-m-d H:i:s'),
+      'qrcode' => $qrcode,
+      'source' => $source,
+      'user_id' => $user->id,
+      'scan' => 1,
+      'lokasi' => $lokasi,
+      'last_scan' => date('Y-m-d H:i:s')
+    );
+    $this->db->insert('zis_distribution', $arr);
+  }
+
+
+  public function isCouponUsed($qrcode)
+  {
+    $sql = "SELECT * FROM zis_distribution WHERE qrcode='$qrcode'";
+    return $this->db->query($sql)->row_array();
+  }
+
   public function getApiOneMustahik($nik)
   {
     $url = 'https://mrbjtangsel.org/mrbj_web/api/zis/get_mustahik/' . $nik;
@@ -57,7 +110,7 @@ class Qrcode_m extends MY_Model
 
   public function getApiGetCouponQr($qrcode)
   {
-    $url = 'https://zis.mrbjtangsel.org/api/zis/get_coupon_qr_get/' . $qrcode;
+    $url = 'https://zis.mrbjtangsel.org/api/zis/get_coupon_qr/' . $qrcode;
     $json = file_get_contents($url);
     $json = json_decode($json, true);
     return $json;

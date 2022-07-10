@@ -12,6 +12,9 @@ class Qrcode_app extends Admin_Controller
     $this->load->library('ciqrcode');
   }
 
+
+
+
   public function data()
   {
     $crud = $this->generate_crud('qr_data');
@@ -24,10 +27,8 @@ class Qrcode_app extends Admin_Controller
 
   public function belum_scan()
   {
-    $crud = $this->generate_crud('qr_data');
-    $crud->set_relation('batch', 'qr_batch', 'name');
-    $crud->where('entry_datetime is null');
-    $crud->where('qr_data.aktif', 'Y');
+    $crud = $this->generate_crud('zis_allowscan');
+    $crud->set_relation('lokasi', 'zis_location', 'lokasi');
     $crud->unset_add();
     $crud->unset_delete();
     $crud->unset_edit();
@@ -37,73 +38,224 @@ class Qrcode_app extends Admin_Controller
 
   public function sudah_scan()
   {
-    $crud = $this->generate_crud('qr_data');
-    $crud->set_relation('batch', 'qr_batch', 'name');
-    $crud->where('entry_datetime is not null');
-    $crud->where('qr_data.aktif', 'Y');
+    $crud = $this->generate_crud('zis_distribution');
+    $crud->set_relation('lokasi', 'zis_location', 'lokasi');
     $crud->unset_add();
     $crud->unset_delete();
     $crud->unset_edit();
-    $this->mPageTitle = 'QR Data Belum Scanned';
+    $this->mPageTitle = 'QR Data Sudah Scanned';
     $this->render_crud();
   }
 
 
 
+  function entry()
+  {
+
+    $form = $this->form_builder->create_form();
+    $this->session->flashdata('');
+    $qrcode = "";
+    $detail_attempt = null;
+    $data = null;
+    $jenis = "";
+
+    if ($form->validate()) {
+      // passed validation
+      $qrcode = $this->input->post('qrcode');
+
+      // proceed to create user
+      $user = $this->ion_auth->user()->row();
+      $data1 = $this->Qrcode_m->getApiOneMustahik($qrcode);
+      $data2 = $this->Qrcode_m->getApiGetOneCouponMuzakih($qrcode);
+      $data3 = $this->Qrcode_m->getApiGetCouponQr($qrcode);
+      $isAllowedList = $this->Qrcode_m->isAllowed($qrcode);
+      $lokasi = $isAllowedList->id_lokasi;
+
+
+      if ($data1) {
+        //Cek Apakah pernah Scan/Entry
+        $data = $data1;
+        $jenis = "MUSTAHIK";
+        $useCoupon = $this->Qrcode_m->isCouponUsed($qrcode);
+
+
+        if ($isAllowedList) {
+          $current = date('Y-m-d H:i:s');
+          $now = strtotime($current);
+          $allowed = strtotime($isAllowedList->start_datetime);
+
+
+          if ($now < $allowed) {
+            $errors = "Subhanallah Afawan, Anda belum waktunya Scan Anda dapat mulai scan $isAllowedList->start_datetime";
+            $this->system_message->set_error($errors);
+          } elseif ($isAllowedList->block == 'Y') {
+            $errors = "Subhanallah Afwan, QR anda Terblokir Pastikan jam dan Lokasi Sesuai";
+            $this->system_message->set_error($errors);
+          } elseif ($isAllowedList->active == 'N'  || $isAllowedList->active == null) {
+            $errors = "Subhanallah Afwan, lokasi anda <h1>$isAllowedList->lokasi</h1> belum di aktivasi";
+            $this->system_message->set_error($errors);
+          } else {
+            if (!$useCoupon) {
+              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi);
+              $msg = "Kupon berhasil digunakan";
+              $this->system_message->set_success($msg);
+            } else {
+              $totscan = $useCoupon['scan'];
+              $last_scan = $useCoupon['last_scan'];
+              $totscan++;
+              $this->Qrcode_m->updateScan($qrcode, $totscan);
+              $msg = "Scan ke <h1>$totscan</h1> Coupon sudah digunakan pada <h1>$last_scan</h1>";
+              $this->system_message->set_error($msg);
+            }
+          }
+        } else {
+          $errors = "Subhanallah Afwan, QR anda terdaftar tetapi belum diijinkan scan";
+          $this->system_message->set_error($errors);
+        }
+      } elseif ($data2) {
+        $data = $data2;
+        $jenis = "MUDHOHI";
+        $useCoupon = $this->Qrcode_m->isCouponUsed($qrcode);
+
+
+        if ($isAllowedList) {
+          $current = date('Y-m-d H:i:s');
+          $now = strtotime($current);
+          $allowed = strtotime($isAllowedList->start_datetime);
+
+          if ($now < $allowed) {
+            $errors = "Subhanallah Afawan, Anda belum waktunya Scan Anda dapat mulai scan $isAllowedList->start_datetime";
+            $this->system_message->set_error($errors);
+          } elseif ($isAllowedList->block == 'Y') {
+            $errors = "Subhanallah Afwan, QR anda Terblokir Pastikan jam dan Lokasi Sesuai";
+            $this->system_message->set_error($errors);
+          } elseif ($isAllowedList->active == 'N'  || $isAllowedList->active == null) {
+            $errors = "Subhanallah Afwan, lokasi anda <h1>$isAllowedList->lokasi</h1> belum di aktivasi";
+            $this->system_message->set_error($errors);
+          } else {
+            if (!$useCoupon) {
+              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi);
+              $msg = "Kupon berhasil digunakan";
+              $this->system_message->set_success($msg);
+            } else {
+              $totscan = $useCoupon['scan'];
+              $last_scan = $useCoupon['last_scan'];
+              $totscan++;
+              $this->Qrcode_m->updateScan($qrcode, $totscan);
+              $msg = "Scan ke <h1>$totscan</h1> Coupon sudah digunakan pada <h1>$last_scan</h1>";
+              $this->system_message->set_error($msg);
+            }
+          }
+        } else {
+          $errors = "Subhanallah Afawan, QR anda terdaftar tetapi belum diijinkan scan";
+          $this->system_message->set_error($errors);
+        }
+      } elseif ($data3) {
+        $data = $data3;
+        $jenis = "KUPON";
+        $msg = "Kupon berhasil digunakan";
+        $useCoupon = $this->Qrcode_m->isCouponUsed($qrcode);
+
+        if ($isAllowedList) {
+          $current = date('Y-m-d H:i:s');
+          $now = strtotime($current);
+          $allowed = strtotime($isAllowedList->start_datetime);
+
+          if ($now < $allowed) {
+            $errors = "Subhanallah Afawan, Anda belum waktunya Scan Anda dapat mulai scan $isAllowedList->start_datetime";
+            $this->system_message->set_error($errors);
+          } elseif ($isAllowedList->block == 'Y') {
+            $errors = "Subhanallah Afwan, QR anda Terblokir Pastikan jam dan Lokasi Sesuai";
+            $this->system_message->set_error($errors);
+          } elseif ($isAllowedList->active == 'N'  || $isAllowedList->active == null) {
+            $errors = "Subhanallah Afwan, lokasi anda <h1>$isAllowedList->lokasi</h1> belum di aktivasi";
+            $this->system_message->set_error($errors);
+          } else {
+            if (!$useCoupon) {
+              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi);
+              $msg = "Kupon berhasil Digunakan";
+              $this->system_message->set_success($msg);
+            } else {
+              $totscan = $useCoupon['scan'];
+              $last_scan = $useCoupon['last_scan'];
+              $totscan++;
+              $this->Qrcode_m->updateScan($qrcode, $totscan);
+              $msg = "Scan ke <h1>$totscan</h1> Coupon sudah digunakan pada <h1>$last_scan</h1>";
+              $this->system_message->set_error($msg);
+            }
+          }
+        } else {
+          $errors = "Subhanallah Afawan, QR anda terdaftar tetapi belum diijinkan scan";
+          $this->system_message->set_error($errors);
+        }
+      } else {
+        $errors = "Subhanallah Afawan, QRCode tidak terdaftar di System";
+        $this->system_message->set_error($errors);
+      }
+    }
+
+
+    // get list of Frontend user groups
+    $this->mPageTitle = 'Enty NIK/QRCODE';
+    $this->mViewData['form'] = $form;
+    $this->mViewData['qrcode'] = $qrcode;
+    $this->mViewData['d'] = $data;
+    $this->mViewData['jenis'] = $jenis;
+    $this->mViewData['detail_attempt'] = $detail_attempt;
+    $this->render('entry');
+  }
   function test()
   {
 
     $form = $this->form_builder->create_form();
     $this->session->flashdata('');
     $qrcode = "";
-    $qrimage = "";
-    $nama = "";
-    $alamat = "";
-    $tgllahir = "";
-    $identitas = "";
-    $filename = "";
-    $attempt = 0;
     $detail_attempt = null;
-    $ktp = "";
-    $rt = "";
-    $rw = "";
-    $provinsi = "";
-    $kabupaten = "";
-    $kelurahan = "";
-    $kecamatan = "";
-    $score = "0";
-    $surveyor = "";
-    $jenis_kelamin = "";
+    $data = null;
+    $jenis = "";
+
 
     if ($form->validate()) {
       // passed validation
       $qrcode = $this->input->post('qrcode');
-
-
+      $isAllowedList = $this->Qrcode_m->isAllowed($qrcode);
       // proceed to create user
       $user = $this->ion_auth->user()->row();
-      $data1 = $this->Qrcode_m->getApimustahik($qrcode);
+      $data1 = $this->Qrcode_m->getApiOneMustahik($qrcode);
+      $data2 = $this->Qrcode_m->getApiGetOneCouponMuzakih($qrcode);
+      $data3 = $this->Qrcode_m->getApiGetCouponQr($qrcode);
 
       //var_dump($data1);
 
       if ($data1) {
         //Cek Apakah pernah Scan/Entry
-        $nama = $data1['nama'];
-        $tgllahir = $data1['tgl_lahir'];
-        $alamat = $data1['alamat'];
-        $qrcode = $data1['nik'];
-        $jenis_kelamin = $data1['jenis_kelamin'];
-        $ktp = $data1['foto_ktp'];
-        $rt = $data1['rt'];
-        $rw = $data1['rw'];
-        $provinsi = $data1['provinsi'];
-        $kabupaten = $data1['kabupaten'];
-        $kelurahan = $data1['kelurahan'];
-        $kecamatan = $data1['kecamatan'];
-        $score = $data1['score'];
-        $surveyor = $data1['surveyor'];
-        $entry_method = 'TYPE';
-        $msg = "Data Ditemukan";
+        $data = $data1;
+        $jenis = "MUSTAHIK";
+        if ($isAllowedList) {
+          if ($isAllowedList->block == 'Y') {
+            $errors = "Subhanallah Afwan, QR anda Terblokir/Lokasi anda Menggunakna Sistem Manual Pengambilan : $isAllowedList->lokasi";
+            $this->system_message->set_error($errors);
+          } else {
+            $msg = "Data Mustahik Ditemukan Pengambilan  : $isAllowedList->lokasi Tangal/Jam : $isAllowedList->start_datetime";
+            $this->system_message->set_success($msg);
+          }
+        } else {
+          $msg = "Data Mustahik Ditemukan Pengambilan  : BELUM DIJADWALKAN";
+          $this->system_message->set_success($msg);
+        }
+      } elseif ($data2) {
+        $data = $data2;
+        $jenis = "MUDHOHI";
+        $msg = "Data Mudhohi Ditemukan";
+        $this->system_message->set_success($msg);
+      } elseif ($data3) {
+        $data = $data3;
+        $jenis = "KUPON";
+        if ($isAllowedList) {
+          $msg = "Data Kupon Ditemukan Pengambilan  : $isAllowedList->lokasi Tangal/Jam : $isAllowedList->start_datetime";
+        } else {
+          $msg = "Data Kupon Ditemukan Pengambilan  : BELUM DIJADWALKAN";
+        }
         $this->system_message->set_success($msg);
       } else {
         $errors = "Subhanallah QRCode tidak terdaftar di System";
@@ -111,300 +263,20 @@ class Qrcode_app extends Admin_Controller
       }
     }
 
-    // get list of Frontend user groups
-    $this->mPageTitle = 'Enty NIK/QRCODE';
-    $this->mViewData['form'] = $form;
-    $this->mViewData['qrcode'] = $qrcode;
-    $this->mViewData['nama'] = $nama;
-    $this->mViewData['jenis_kelamin'] = $jenis_kelamin;
-    $this->mViewData['ktp'] = $ktp;
-    $this->mViewData['alamat'] = $alamat;
-    $this->mViewData['identitas'] = $identitas;
-    $this->mViewData['tgllahir'] = $tgllahir;
-    $this->mViewData['detail_attempt'] = $detail_attempt;
-    $this->mViewData['rt'] = $rt;
-    $this->mViewData['rw'] = $rw;
-    $this->mViewData['provinsi'] = $provinsi;
-    $this->mViewData['kabupaten'] = $kabupaten;
-    $this->mViewData['kelurahan'] = $kelurahan;
-    $this->mViewData['kecamatan'] = $kecamatan;
-    $this->mViewData['score'] = $score;
-    $this->mViewData['surveyor'] = $surveyor;
-    $this->render('entry');
-  }
-
-
-
-  function entry()
-  {
-    $form = $this->form_builder->create_form();
-    $this->session->flashdata('');
-
-    $qrcode = "";
-    $qrimage = "";
-    $nama = "";
-    $alamat = "";
-    $tgllahir = "";
-    $identitas = "";
-    $filename = "";
-    $attempt = 0;
-    $detail_attempt = null;
-    $ktp = "";
-    $rt = "";
-    $rw = "";
-    $provinsi = "";
-    $kabupaten = "";
-    $kelurahan = "";
-    $kecamatan = "";
-    $score = "0";
-    $surveyor = "";
-    $jenis_kelamin = "";
-    if ($form->validate()) {
-      // passed validation
-      $qrcode = $this->input->post('qrcode');
-      // proceed to create user
-      $user = $this->ion_auth->user()->row();
-      $entry_user = $user->id;
-      //Get Active Event
-      $this->db->where('TRIM(qrcode)', $qrcode);
-      $data = $this->db->get('qr_data')->row_array();
-
-      //echo $this->db->last_query();die;
-      if ($data) {
-        //Cek Apakah pernah Scan/Entry
-        $nama = $data['nama'];
-        $tgllahir = $data['tgl_lahir'];
-        $alamat = $data['alamat'];
-        $qrcode = $data['qrcode'];
-        $jenis_kelamin = $data['jenis_kelamin'];
-        $active_event = $data['batch'];
-        $ktp = $data['foto_ktp'];
-        $rt = $data['rt'];
-        $rw = $data['rw'];
-        $provinsi = $data['provinsi'];
-        $kabupaten = $data['kabupaten'];
-        $kelurahan = $data['kelurahan'];
-        $kecamatan = $data['kecamatan'];
-        $score = $data['score'];
-        $surveyor = $data['surveyor'];
-        $entry_method = 'TYPE';
-
-        if ($data['entry_datetime'] == null) {
-          // success
-          if ($data['aktif'] != 'Y') {
-            $attempt = $data['fraud_attempt'] + 1;
-            $this->db->where('qrcode', $qrcode);
-            $this->db->update('qr_data', array('fraud_attempt' => $attempt));
-            $messages = " Subhanallah " . $qrcode . " Anda tidak Aktif di sistem";
-            $this->db->insert('qr_transaction', array('txn_datetime' => date('Y-m-d H:i:s'), 'user' => $entry_user, 'batch' => $active_event, 'qrcode' => $qrcode, 'status' => 'N', 'entry_method' => $entry_method));
-            //echo $this->db->last_query();die;
-            $this->system_message->set_error($messages);
-          } else {
-            //apakah event sudah buka?
-            $this->db->where('aktif', 1);
-            $this->db->where('id', $data['batch']);
-            $hsl = $this->db->get('qr_batch')->num_rows();
-
-            if ($hsl > 0) {
-              $this->db->where('qrcode', $qrcode);
-              $this->db->update('qr_data', array('entry_datetime' => date('Y-m-d H:i:s'), 'entry_user' => $entry_user, 'entry_method' => $entry_method));
-              $messages = "Berhasil Scan Allhamdullilah";
-              //Add Transaction
-              $this->db->insert('qr_transaction', array('txn_datetime' => date('Y-m-d H:i:s'), 'user' => $entry_user, 'batch' => $active_event, 'qrcode' => $qrcode, 'status' => 'Y', 'entry_method' => $entry_method));
-              $this->system_message->set_success($messages);
-            } else {
-              $attempt = $data['fraud_attempt'] + 1;
-              $this->db->where('qrcode', $qrcode);
-              $this->db->update('qr_data', array('fraud_attempt' => $attempt));
-              $messages = " Subhanallah " . $qrcode . " Batch anda belum dibuka";
-              $this->db->insert('qr_transaction', array('txn_datetime' => date('Y-m-d H:i:s'), 'user' => $entry_user, 'batch' => $active_event, 'qrcode' => $qrcode, 'status' => 'N', 'entry_method' => $entry_method));
-              $this->system_message->set_error($messages);
-            }
-          }
-        } else {
-          $attempt = $data['fraud_attempt'] + 1;
-          $this->db->where('qrcode', $qrcode);
-          $this->db->update('qr_data', array('fraud_attempt' => $attempt));
-          $messages = " Subhanallah " . $data['nama'] . " Sudah Berhasil melakukan Scan Pada : " . date('d-m-Y H:i:s', strtotime($data['entry_datetime'])) . " Dan Sudah melakukan <h2>$attempt Kali</h2> Percobaan";
-          //Add Transaction
-          $this->db->insert('qr_transaction', array('txn_datetime' => date('Y-m-d H:i:s'), 'user' => $entry_user, 'batch' => $active_event, 'qrcode' => $qrcode, 'status' => 'N', 'entry_method' => $entry_method));
-
-          $this->system_message->set_error($messages);
-          if ($attempt > 0) {
-            $this->db->where('qrcode', $qrcode);
-            $this->db->where('batch', $active_event);
-            $this->db->join('admin_users', 'admin_users.id = qr_transaction.user');
-            $this->db->from('qr_transaction');
-            $this->db->order_by("txn_datetime", "desc");
-            $detail_attempt = $this->db->get()->result();
-          }
-        }
-      } else {
-        $errors = "Subhanallah QRCode tidak terdaftar di System Atau Batch Belum aktif";
-        //Add Transaction
-        $entry_method = "TYPE";
-        $this->db->insert('qr_transaction', array('txn_datetime' => date('Y-m-d H:i:s'), 'user' => $entry_user, 'qrcode' => $qrcode, 'status' => 'N', 'entry_method' => $entry_method));
-        $this->system_message->set_error($errors);
-      }
-    }
 
     // get list of Frontend user groups
     $this->mPageTitle = 'Enty NIK/QRCODE';
     $this->mViewData['form'] = $form;
     $this->mViewData['qrcode'] = $qrcode;
-    $this->mViewData['nama'] = $nama;
-    $this->mViewData['jenis_kelamin'] = $jenis_kelamin;
-    $this->mViewData['ktp'] = $ktp;
-    $this->mViewData['alamat'] = $alamat;
-    $this->mViewData['identitas'] = $identitas;
-    $this->mViewData['tgllahir'] = $tgllahir;
+    $this->mViewData['d'] = $data;
+    $this->mViewData['jenis'] = $jenis;
     $this->mViewData['detail_attempt'] = $detail_attempt;
-    $this->mViewData['rt'] = $rt;
-    $this->mViewData['rw'] = $rw;
-    $this->mViewData['provinsi'] = $provinsi;
-    $this->mViewData['kabupaten'] = $kabupaten;
-    $this->mViewData['kelurahan'] = $kelurahan;
-    $this->mViewData['kecamatan'] = $kecamatan;
-    $this->mViewData['score'] = $score;
-    $this->mViewData['surveyor'] = $surveyor;
     $this->render('entry');
   }
 
-  function scan()
-  {
-    $form = $this->form_builder->create_form();
-    $this->session->flashdata('');
-    $batch = "";
-    $qrcode = "";
-    $qrimage = "";
-    $nama = "";
-    $alamat = "";
-    $tgllahir = "";
-    $identitas = "";
-    $filename = "";
-    $attempt = 0;
-    $detail_attempt = null;
-    $ktp = "";
-    $rt = "";
-    $rw = "";
-    $provinsi = "";
-    $kabupaten = "";
-    $kelurahan = "";
-    $kecamatan = "";
-    $score = "0";
-    $surveyor = "";
-    $jenis_kelamin = "";
-    if ($form->validate()) {
-      // passed validation
-      $qrcode = $this->input->post('qrcode');
-      // proceed to create user
-      $user = $this->ion_auth->user()->row();
-      $entry_user = $user->id;
-      //Get Active Event
-      $this->db->where('TRIM(qrcode)', $qrcode);
-      $data = $this->db->get('qr_data')->row_array();
 
-      //echo $this->db->last_query();die;
-      if ($data) {
-        //Cek Apakah pernah Scan/Entry
-        $nama = $data['nama'];
-        $tgllahir = $data['tgl_lahir'];
-        $alamat = $data['alamat'];
-        $qrcode = $data['qrcode'];
-        $jenis_kelamin = $data['jenis_kelamin'];
-        $active_event = $data['batch'];
-        $ktp = $data['foto_ktp'];
-        $rt = $data['rt'];
-        $rw = $data['rw'];
-        $provinsi = $data['provinsi'];
-        $kabupaten = $data['kabupaten'];
-        $kelurahan = $data['kelurahan'];
-        $kecamatan = $data['kecamatan'];
-        $score = $data['score'];
-        $batch = $data['batch'];
-        $surveyor = $data['surveyor'];
-        $entry_method = 'SCAN';
 
-        if ($data['entry_datetime'] == null) {
-          // success
-          if ($data['aktif'] != 'Y') {
-            $attempt = $data['fraud_attempt'] + 1;
-            $this->db->where('qrcode', $qrcode);
-            $this->db->update('qr_data', array('fraud_attempt' => $attempt));
-            $messages = " Subhanallah " . $qrcode . " Anda tidak Aktif di sistem";
-            $this->db->insert('qr_transaction', array('txn_datetime' => date('Y-m-d H:i:s'), 'user' => $entry_user, 'batch' => $active_event, 'qrcode' => $qrcode, 'status' => 'N', 'entry_method' => $entry_method));
-            //echo $this->db->last_query();die;
-            $this->system_message->set_error($messages);
-          } else {
-            //apakah event sudah buka?
-            $this->db->where('aktif', 1);
-            $this->db->where('id', $data['batch']);
-            $hsl = $this->db->get('qr_batch')->num_rows();
 
-            if ($hsl > 0) {
-              $this->db->where('qrcode', $qrcode);
-              $this->db->update('qr_data', array('entry_datetime' => date('Y-m-d H:i:s'), 'entry_user' => $entry_user, 'entry_method' => $entry_method));
-              $messages = "Berhasil Scan Allhamdullilah";
-              //Add Transaction
-              $this->db->insert('qr_transaction', array('txn_datetime' => date('Y-m-d H:i:s'), 'user' => $entry_user, 'batch' => $active_event, 'qrcode' => $qrcode, 'status' => 'Y', 'entry_method' => $entry_method));
-              $this->system_message->set_success($messages);
-            } else {
-              $attempt = $data['fraud_attempt'] + 1;
-              $this->db->where('qrcode', $qrcode);
-              $this->db->update('qr_data', array('fraud_attempt' => $attempt));
-              $messages = " Subhanallah " . $qrcode . " Batch anda belum dibuka";
-              $this->db->insert('qr_transaction', array('txn_datetime' => date('Y-m-d H:i:s'), 'user' => $entry_user, 'batch' => $active_event, 'qrcode' => $qrcode, 'status' => 'N', 'entry_method' => $entry_method));
-              $this->system_message->set_error($messages);
-            }
-          }
-        } else {
-          $attempt = $data['fraud_attempt'] + 1;
-          $this->db->where('qrcode', $qrcode);
-          $this->db->update('qr_data', array('fraud_attempt' => $attempt));
-          $messages = " Subhanallah " . $data['nama'] . " Sudah Berhasil melakukan Scan Pada : " . date('d-m-Y H:i:s', strtotime($data['entry_datetime'])) . " Dan Sudah melakukan <h2>$attempt Kali</h2> Percobaan";
-          //Add Transaction
-          $this->db->insert('qr_transaction', array('txn_datetime' => date('Y-m-d H:i:s'), 'user' => $entry_user, 'batch' => $active_event, 'qrcode' => $qrcode, 'status' => 'N', 'entry_method' => $entry_method));
-
-          $this->system_message->set_error($messages);
-          if ($attempt > 0) {
-            $this->db->where('qrcode', $qrcode);
-            $this->db->where('batch', $active_event);
-            $this->db->join('admin_users', 'admin_users.id = qr_transaction.user');
-            $this->db->from('qr_transaction');
-            $this->db->order_by("txn_datetime", "desc");
-            $detail_attempt = $this->db->get()->result();
-          }
-        }
-      } else {
-        $errors = "Subhanallah QRCode tidak terdaftar di System Atau Batch Belum aktif";
-        //Add Transaction
-        $entry_method = "SCAN";
-        $this->db->insert('qr_transaction', array('txn_datetime' => date('Y-m-d H:i:s'), 'user' => $entry_user, 'qrcode' => $qrcode, 'status' => 'N', 'entry_method' => $entry_method));
-        $this->system_message->set_error($errors);
-      }
-    }
-
-    // get list of Frontend user groups
-    $this->mPageTitle = 'Scan QRCode';
-    $this->mViewData['form'] = $form;
-    $this->mViewData['qrcode'] = $qrcode;
-    $this->mViewData['nama'] = $nama;
-    $this->mViewData['jenis_kelamin'] = $jenis_kelamin;
-    $this->mViewData['ktp'] = $ktp;
-    $this->mViewData['alamat'] = $alamat;
-    $this->mViewData['identitas'] = $identitas;
-    $this->mViewData['tgllahir'] = $tgllahir;
-    $this->mViewData['detail_attempt'] = $detail_attempt;
-    $this->mViewData['rt'] = $rt;
-    $this->mViewData['rw'] = $rw;
-    $this->mViewData['provinsi'] = $provinsi;
-    $this->mViewData['kabupaten'] = $kabupaten;
-    $this->mViewData['kelurahan'] = $kelurahan;
-    $this->mViewData['kecamatan'] = $kecamatan;
-    $this->mViewData['score'] = $score;
-    $this->mViewData['surveyor'] = $surveyor;
-    $this->render('scan');
-  }
 
 
   function batch()

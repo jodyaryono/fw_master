@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
@@ -33,7 +33,7 @@ $config['ci_bootstrap'] = array(
 	// Default scripts to embed at page head or end
 	'scripts' => array(
 		'head'	=> array(
-			'assets/vendor/jquery/jquery.slim.min.js',
+			'https://code.jquery.com/jquery-2.2.4.min.js',
 			'https://cdn.jsdelivr.net/npm/vue@2.6.12',
 			'https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js',
 			'https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js',
@@ -137,10 +137,9 @@ $config['ci_bootstrap'] = array(
 
 	// Login page
 	'login_url' => '',
-	'copyright'=>'Framework_master',
+	'copyright' => 'Framework_master',
 	// Restricted pages
-	'page_auth' => array(
-	),
+	'page_auth' => array(),
 
 	// Email config
 	'email' => array(
