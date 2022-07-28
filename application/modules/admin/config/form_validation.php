@@ -28,6 +28,20 @@ $config = array(
 			'rules'		=> 'required',
 		),
 	),
+	'qrcode_app/entry_webcam' => array(
+		array(
+			'field'		=> 'qrcode',
+			'label'		=> 'QR CODE',
+			'rules'		=> 'required',
+		),
+	),
+	'qrcode_app/test_webcam' => array(
+		array(
+			'field'		=> 'qrcode',
+			'label'		=> 'QR CODE',
+			'rules'		=> 'required',
+		),
+	),
 	// Admin User Login
 	'login/index' => array(
 		array(

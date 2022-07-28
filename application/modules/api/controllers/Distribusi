@@ -1,0 +1,19 @@
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+class Distribusi extends Api_Controller
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('User_model');
+        $this->load->model('Admin_user_model');
+        $this->load->library('session');
+        $this->load->helper('custom');
+    }
+    public function data_post()
+    {
+        $data = $this->input->post();
+        foreach ($data as $row) {
+        }
+    }
+}

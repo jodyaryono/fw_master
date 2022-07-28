@@ -1,6 +1,6 @@
 <style>
 body {
-    /* background-image: url('<//?= base_url('assets/dist/images/bg.png') ?>'); */
+    background-image: url('<?= base_url('assets/dist/images/bg.png') ?>');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
@@ -38,7 +38,7 @@ body {
                         </td>
                         <td align="center" style="width:70%">
                             <strong>
-                                <div style="font-size:28px;">Monitoring Status Penyaluran Sembako Murah MRBJ
+                                <div style="font-size:28px;">Monitoring Status Penyaluran Qurban 1443 H
                                     <br>
                                 </div>
                                 <div style="font-size:32px;">MASJID RAYA BINTARO JAYA (MRBJ) <br>www.mrbjtangsel.org
@@ -83,18 +83,18 @@ body {
                                         </th>
                                         <th>
                                             <center>
-                                                Kupon
+                                                Kupon/Kantong
                                             </center>
                                         </th>
 
                                         <th>
                                             <center>
-                                                Kupon Digunakan
+                                                Kupon/Kantong Digunakan
                                             </center>
                                         </th>
                                         <th>
                                             <center>
-                                                kupon Sisa
+                                                kupon/Kantong Sisa
                                             </center>
                                         </th>
 
@@ -147,6 +147,23 @@ body {
                                             <b>
                                                 <?php echo $lokasi; ?>
 
+
+                                                <?php if ($lokasi == "" && $it == 2) : ?>
+
+                                                <img src="<?= base_url('assets/dist/images/sapi_satuan.png') ?>"
+                                                    width="300" alt="">
+                                                <?php endif; ?>
+                                                <?php if ($lokasi == "" && $it == 3) : ?>
+                                                <img src="<?= base_url('assets/dist/images/sapi_kolektif.png') ?>"
+                                                    width="310" alt="">
+                                                <?php endif; ?>
+                                                <?php if ($lokasi == "" && $it == 4) : ?>
+                                                <img src="<?= base_url('assets/dist/images/kambing.png') ?>" width="250"
+                                                    alt="">
+                                                <?php endif; ?>
+                                                <?php
+                                                    $lokasi = $r->lokasi;
+                                                    ?>
                                             </b>
 
                                         </td>
@@ -234,9 +251,168 @@ body {
                                     </tr>
                                 </tfoot>
                             </table>
+                            <table class="table table-lg" border="2">
+                                <thead>
+                                    <tr style="background-color:greenyellow">
+                                        <th style="width: 10px">#</th>
+                                        <th>Lokasi</th>
+                                        <th>Jenis</th>
+                                        <th>
+                                            <center>
+                                                Kupon/Kantong
+                                            </center>
+                                        </th>
+
+                                        <th>
+                                            <center>
+                                                Kupon/Kantong Digunakan
+                                            </center>
+                                        </th>
+                                        <th>
+                                            <center>
+                                                kupon/Kantong Sisa
+                                            </center>
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $total = 0;
+                                    $i = 0;
+                                    $kupon = 0;
+                                    $digunakan = 0;
+                                    $digunakan_kantong = 0;
+                                    $progress = 0;
+                                    $sisa = 0;
+                                    $lokasi = "";
+                                    $kantong = 0;
+                                    $sisa_kantong = 0;
+                                    $no = "";
+                                    $it = 0;
+                                    ?>
+                                    <?php foreach ($d2 as $r) : ?>
+                                    <?php
+
+                                        $kupon += $r->kupon;
+                                        $kantong += $r->kantong;
+                                        $digunakan += $r->digunakan;
+                                        $digunakan_kantong += $r->digunakan_kantong;
+                                        $progress += $r->progress;
+                                        $sisa += $r->kupon - $r->digunakan;
+
+                                        $sisa_kantong += $r->kantong - $r->digunakan_kantong;
+                                        $it++;
+
+                                        if ($lokasi !== $r->lokasi) {
+                                            $lokasi = $r->lokasi;
+                                            $i++;
+                                            $no = $i;
+                                        } else {
+                                            $lokasi = "";
+                                            $no = "";
+                                        }
+
+                                        ?>
+                                    <tr>
+                                        <td>
+                                            <?= $no ?>
+                                        </td>
+                                        <td>
+                                            <b>
+                                                <?php echo $lokasi; ?>
+
+                                                <?php
+                                                    $lokasi = $r->lokasi;
+                                                    ?>
+                                            </b>
+                                        </td>
+
+                                        <td><?= $r->source . " ( <span class='digital'><b>" . number_format(floatval($r->progress), 2) . "%</b></span>) " ?>
+                                            <div class="progress progress-sm">
+                                                <div class="progress-bar progress-bar-primary"
+                                                    style="width: <?= $r->progress ?>%">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <center>
+                                                <span class="digital">
+                                                    <b> <?= $r->kupon ?> / <?= $r->kantong ?>
+                                                    </b>
+                                                </span>
+                                            </center>
+                                        </td>
+                                        <td>
+                                            <center>
+                                                <span class="digital">
+                                                    <b>
+                                                        <?= $r->digunakan ?>/<?= $r->digunakan_kantong ?>
+                                                    </b>
+                                                </span>
+                                            </center>
+                                        </td>
+                                        <td>
+                                            <center>
+                                                <span class="digital">
+                                                    <b>
+                                                        <?= $r->kupon - $r->digunakan ?>
+                                                        /<?= $r->kantong - $r->digunakan_kantong ?>
+                                                    </b>
+                                                </span>
+
+                                            </center>
+                                        </td>
+
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background-color:black;color:greenyellow">
+                                        <td></td>
+                                        <td>
+                                            <span class="digital">
+                                                <b>TOTAL
+                                                </b>
+                                                <span class="digital">
+                                        </td>
+                                        <td>
+
+                                        </td>
+
+                                        <td>
+                                            <center>
+                                                <span class="digital">
+                                                    <b> <?= $kupon ?>/<?= $kantong ?></b>
+                                                </span>
+
+                                            </center>
+
+                                        </td>
+                                        <td>
+                                            <center>
+                                                <span class="digital">
+                                                    <b> <?= $digunakan ?>/<?= $digunakan_kantong ?> </b>
+                                                </span>
+
+                                            </center>
+
+                                        </td>
+                                        <td>
+                                            <center>
+                                                <span class="digital">
+                                                    <b> <?= $sisa ?>/<?= $sisa_kantong ?>
+                                                    </b>
+                                                </span>
+                                            </center>
+
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
 
                             <center>
-                                <!-- <img src="<//?= base_url('assets/dist/images/qurban.jpg') ?>" height="150" alt=""> -->
+                                <img src="<?= base_url('assets/dist/images/qurban.jpg') ?>" height="150" alt="">
                             </center>
                     </div>
                 </div>

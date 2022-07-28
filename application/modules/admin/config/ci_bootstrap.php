@@ -35,7 +35,10 @@ $config['ci_bootstrap'] = array(
 		'head'	=> array(
 			'assets/dist/admin/adminlte.min.js',
 			'assets/dist/admin/lib.min.js',
-			'assets/dist/admin/app.min.js'
+			'assets/dist/admin/app.min.js',
+			'https://cdn.jsdelivr.net/npm/sweetalert2@11.0.17/dist/sweetalert2.all.min.js',
+			'https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js',
+			'assets/dist/html5-qrcode.min.js'
 		),
 		'foot'	=> array(),
 	),
@@ -68,7 +71,9 @@ $config['ci_bootstrap'] = array(
 			'icon'		=> 'fa fa-users',
 			'children'  => array(
 				'Test QR'						=> 'qrcode_app/test',
-				'Scan/Enrtry'							=> 'qrcode_app/entry',
+				'Test Webcam'						=> 'qrcode_app/test_webcam',
+				'Scan webcam'							=> 'qrcode_app/entry_webcam',
+				'Scan/Entry'							=> 'qrcode_app/entry',
 				'Monitoring'				=> 'monitoring',
 				'Sudah Scan'				=> 'qrcode_app/sudah_scan',
 				'Belum Scan'				=> 'qrcode_app/belum_scan',
