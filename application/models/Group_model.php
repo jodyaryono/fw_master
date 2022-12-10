@@ -1,4 +1,4 @@
-<?php 
-
-class Group_model extends MY_Model {
+<?php 
+
+class Group_model extends MY_Model {
 }

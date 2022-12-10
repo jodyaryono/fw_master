@@ -1,4 +1,4 @@
-<?php 
-
-class Api_key_model extends MY_Model {
+<?php 
+
+class Api_key_model extends MY_Model {
 }

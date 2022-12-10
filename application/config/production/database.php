@@ -75,7 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'mrbjtangsel.org',		'username' => 'u0502216_zis_svr',		'password' => 'zis2022#',		'database' => 'u0502216_zis_svr',
+	'hostname' => 'mrbjtangsel.org',
+	'username' => 'u0502216_mrkr',
+	'password' => 'WF!m8E3RWK%{',
+	'database' => 'u0502216_mrkr-distribusi',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

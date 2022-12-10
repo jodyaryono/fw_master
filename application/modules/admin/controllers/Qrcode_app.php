@@ -27,7 +27,8 @@ class Qrcode_app extends Admin_Controller
 
   public function belum_scan()
   {
-    $crud = $this->generate_crud('zis_allowscan');
+    $crud = $this->generate_crud('vw_belum_scan');
+    $crud->set_primary_key('qrcode');
     $crud->set_relation('lokasi', 'zis_location', 'lokasi');
     $crud->unset_add();
     $crud->unset_delete();
@@ -44,6 +45,13 @@ class Qrcode_app extends Admin_Controller
     $crud->unset_delete();
     $crud->unset_edit();
     $this->mPageTitle = 'QR Data Sudah Scanned';
+    $this->render_crud();
+  }
+
+  public function boleh_scan()
+  {
+    $crud = $this->generate_crud('zis_allowscan');
+    $this->mPageTitle = 'QR Data Boleh Scanned';
     $this->render_crud();
   }
 
@@ -66,8 +74,6 @@ class Qrcode_app extends Admin_Controller
       // proceed to create user
       $user = $this->ion_auth->user()->row();
       $data1 = $this->Qrcode_m->getApiOneMustahik($qrcode);
-      $data2 = $this->Qrcode_m->getApiGetOneCouponMuzakih($qrcode);
-      $data3 = $this->Qrcode_m->getApiGetCouponQr($qrcode);
       $isAllowedList = $this->Qrcode_m->isAllowed($qrcode);
       $lokasi = $isAllowedList->id_lokasi ?? "";
 
@@ -75,7 +81,15 @@ class Qrcode_app extends Admin_Controller
       if ($data1) {
         //Cek Apakah pernah Scan/Entry
         $data = $data1;
-        $jenis = "MUSTAHIK";
+        $jenis = "";
+        if ($data1->security == 'Y') {
+          $jenis = "SECURITY";
+        } elseif ($data1->kebersihan == 'Y') {
+          $jenis = "KEBERSIHAN";
+        } else {
+          $jenis = "MUSTAHIK";
+        }
+
         $useCoupon = $this->Qrcode_m->isCouponUsed($qrcode);
 
 
@@ -110,83 +124,6 @@ class Qrcode_app extends Admin_Controller
           }
         } else {
           $errors = "Subhanallah Afwan, QR anda terdaftar tetapi belum diijinkan scan";
-          $this->system_message->set_error($errors);
-        }
-      } elseif ($data2) {
-        $data = $data2;
-        $jenis = "MUDHOHI";
-        $useCoupon = $this->Qrcode_m->isCouponUsed($qrcode);
-
-
-        if ($isAllowedList) {
-          $current = date('Y-m-d H:i:s');
-          $now = strtotime($current);
-          $allowed = strtotime($isAllowedList->start_datetime);
-
-          if ($now < $allowed) {
-            $errors = "Subhanallah Afawan, Anda belum waktunya Scan Anda dapat mulai scan $isAllowedList->start_datetime";
-            $this->system_message->set_error($errors);
-          } elseif ($isAllowedList->block == 'Y') {
-            $errors = "Subhanallah Afwan, QR anda Terblokir Pastikan jam dan Lokasi Sesuai";
-            $this->system_message->set_error($errors);
-          } elseif ($isAllowedList->active == 'N'  || $isAllowedList->active == null) {
-            $errors = "Subhanallah Afwan, lokasi anda <h1>$isAllowedList->lokasi</h1> belum di aktivasi";
-            $this->system_message->set_error($errors);
-          } else {
-            if (!$useCoupon) {
-              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi, $isAllowedList->kantong);
-              $msg = "Kupon berhasil digunakan";
-              $this->system_message->set_success($msg);
-            } else {
-              $totscan = $useCoupon['scan'];
-              $last_scan = $useCoupon['last_scan'];
-              $totscan++;
-              $this->Qrcode_m->updateScan($qrcode, $totscan);
-              $msg = "Scan ke <h1>$totscan</h1> Coupon sudah digunakan pada <h1>$last_scan</h1>";
-              $this->system_message->set_error($msg);
-            }
-          }
-        } else {
-          $errors = "Subhanallah Afawan, QR anda terdaftar tetapi belum diijinkan scan";
-          $this->system_message->set_error($errors);
-        }
-      } elseif ($data3) {
-        $data = $data3;
-        $jenis = "KUPON";
-        $msg = "Kupon berhasil digunakan";
-        $useCoupon = $this->Qrcode_m->isCouponUsed($qrcode);
-
-        if ($isAllowedList) {
-          $current = date('Y-m-d H:i:s');
-          $now = strtotime($current);
-          $allowed = strtotime($isAllowedList->start_datetime);
-          $jenis = $isAllowedList->source;
-
-          if ($now < $allowed) {
-            $errors = "Subhanallah Afawan, Anda belum waktunya Scan Anda dapat mulai scan $isAllowedList->start_datetime";
-            $this->system_message->set_error($errors);
-          } elseif ($isAllowedList->block == 'Y') {
-            $errors = "Subhanallah Afwan, QR anda Terblokir Pastikan jam dan Lokasi Sesuai";
-            $this->system_message->set_error($errors);
-          } elseif ($isAllowedList->active == 'N'  || $isAllowedList->active == null) {
-            $errors = "Subhanallah Afwan, lokasi anda <h1>$isAllowedList->lokasi</h1> belum di aktivasi";
-            $this->system_message->set_error($errors);
-          } else {
-            if (!$useCoupon) {
-              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi, $isAllowedList->kantong);
-              $msg = "Kupon berhasil Digunakan";
-              $this->system_message->set_success($msg);
-            } else {
-              $totscan = $useCoupon['scan'];
-              $last_scan = $useCoupon['last_scan'];
-              $totscan++;
-              $this->Qrcode_m->updateScan($qrcode, $totscan);
-              $msg = "Scan ke <h1>$totscan</h1> Coupon sudah digunakan pada <h1>$last_scan</h1>";
-              $this->system_message->set_error($msg);
-            }
-          }
-        } else {
-          $errors = "Subhanallah Afawan, QR anda terdaftar tetapi belum diijinkan scan";
           $this->system_message->set_error($errors);
         }
       } else {
@@ -222,8 +159,6 @@ class Qrcode_app extends Admin_Controller
       // proceed to create user
       $user = $this->ion_auth->user()->row();
       $data1 = $this->Qrcode_m->getApiOneMustahik($qrcode);
-      $data2 = $this->Qrcode_m->getApiGetOneCouponMuzakih($qrcode);
-      $data3 = $this->Qrcode_m->getApiGetCouponQr($qrcode);
       $isAllowedList = $this->Qrcode_m->isAllowed($qrcode);
       $lokasi = $isAllowedList->id_lokasi;
 
@@ -231,7 +166,15 @@ class Qrcode_app extends Admin_Controller
       if ($data1) {
         //Cek Apakah pernah Scan/Entry
         $data = $data1;
-        $jenis = "MUSTAHIK";
+        var_dump($data['security']);
+        $jenis = "";
+        if ($data1['security'] == 'Y') {
+          $jenis = "SECURITY";
+        } elseif ($data1['kebersihan'] == 'Y') {
+          $jenis = "KEBERSIHAN";
+        } else {
+          $jenis = "MUSTAHIK";
+        }
         $useCoupon = $this->Qrcode_m->isCouponUsed($qrcode);
 
 
@@ -266,83 +209,6 @@ class Qrcode_app extends Admin_Controller
           }
         } else {
           $errors = "Subhanallah Afwan, QR anda terdaftar tetapi belum diijinkan scan";
-          $this->system_message->set_error($errors);
-        }
-      } elseif ($data2) {
-        $data = $data2;
-        $jenis = "MUDHOHI";
-        $useCoupon = $this->Qrcode_m->isCouponUsed($qrcode);
-
-
-        if ($isAllowedList) {
-          $current = date('Y-m-d H:i:s');
-          $now = strtotime($current);
-          $allowed = strtotime($isAllowedList->start_datetime);
-
-          if ($now < $allowed) {
-            $errors = "Subhanallah Afawan, Anda belum waktunya Scan Anda dapat mulai scan $isAllowedList->start_datetime";
-            $this->system_message->set_error($errors);
-          } elseif ($isAllowedList->block == 'Y') {
-            $errors = "Subhanallah Afwan, QR anda Terblokir Pastikan jam dan Lokasi Sesuai";
-            $this->system_message->set_error($errors);
-          } elseif ($isAllowedList->active == 'N'  || $isAllowedList->active == null) {
-            $errors = "Subhanallah Afwan, lokasi anda <h1>$isAllowedList->lokasi</h1> belum di aktivasi";
-            $this->system_message->set_error($errors);
-          } else {
-            if (!$useCoupon) {
-              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi, $isAllowedList->kantong);
-              $msg = "Kupon berhasil digunakan";
-              $this->system_message->set_success($msg);
-            } else {
-              $totscan = $useCoupon['scan'];
-              $last_scan = $useCoupon['last_scan'];
-              $totscan++;
-              $this->Qrcode_m->updateScan($qrcode, $totscan);
-              $msg = "Scan ke <h1>$totscan</h1> Coupon sudah digunakan pada <h1>$last_scan</h1>";
-              $this->system_message->set_error($msg);
-            }
-          }
-        } else {
-          $errors = "Subhanallah Afawan, QR anda terdaftar tetapi belum diijinkan scan";
-          $this->system_message->set_error($errors);
-        }
-      } elseif ($data3) {
-        $data = $data3;
-        $jenis = "KUPON";
-        $msg = "Kupon berhasil digunakan";
-        $useCoupon = $this->Qrcode_m->isCouponUsed($qrcode);
-
-        if ($isAllowedList) {
-          $current = date('Y-m-d H:i:s');
-          $now = strtotime($current);
-          $allowed = strtotime($isAllowedList->start_datetime);
-          $jenis = $isAllowedList->source;
-
-          if ($now < $allowed) {
-            $errors = "Subhanallah Afawan, Anda belum waktunya Scan Anda dapat mulai scan $isAllowedList->start_datetime";
-            $this->system_message->set_error($errors);
-          } elseif ($isAllowedList->block == 'Y') {
-            $errors = "Subhanallah Afwan, QR anda Terblokir Pastikan jam dan Lokasi Sesuai";
-            $this->system_message->set_error($errors);
-          } elseif ($isAllowedList->active == 'N'  || $isAllowedList->active == null) {
-            $errors = "Subhanallah Afwan, lokasi anda <h1>$isAllowedList->lokasi</h1> belum di aktivasi";
-            $this->system_message->set_error($errors);
-          } else {
-            if (!$useCoupon) {
-              $this->Qrcode_m->useCoupon($qrcode, $jenis, $lokasi, $isAllowedList->kantong);
-              $msg = "Kupon berhasil Digunakan";
-              $this->system_message->set_success($msg);
-            } else {
-              $totscan = $useCoupon['scan'];
-              $last_scan = $useCoupon['last_scan'];
-              $totscan++;
-              $this->Qrcode_m->updateScan($qrcode, $totscan);
-              $msg = "Scan ke <h1>$totscan</h1> Coupon sudah digunakan pada <h1>$last_scan</h1>";
-              $this->system_message->set_error($msg);
-            }
-          }
-        } else {
-          $errors = "Subhanallah Afawan, QR anda terdaftar tetapi belum diijinkan scan";
           $this->system_message->set_error($errors);
         }
       } else {
@@ -380,8 +246,6 @@ class Qrcode_app extends Admin_Controller
       // proceed to create user
       $user = $this->ion_auth->user()->row();
       $data1 = $this->Qrcode_m->getApiOneMustahik($qrcode);
-      $data2 = $this->Qrcode_m->getApiGetOneCouponMuzakih($qrcode);
-      $data3 = $this->Qrcode_m->getApiGetCouponQr($qrcode);
 
       //var_dump($data1);
 
@@ -401,20 +265,6 @@ class Qrcode_app extends Admin_Controller
           $msg = "Data Mustahik Ditemukan Pengambilan  : BELUM DIJADWALKAN";
           $this->system_message->set_success($msg);
         }
-      } elseif ($data2) {
-        $data = $data2;
-        $jenis = "MUDHOHI";
-        $msg = "Data Mudhohi Ditemukan";
-        $this->system_message->set_success($msg);
-      } elseif ($data3) {
-        $data = $data3;
-        $jenis = "KUPON";
-        if ($isAllowedList) {
-          $msg = "Data Kupon Ditemukan Pengambilan  : $isAllowedList->lokasi Tangal/Jam : $isAllowedList->start_datetime";
-        } else {
-          $msg = "Data Kupon Ditemukan Pengambilan  : BELUM DIJADWALKAN";
-        }
-        $this->system_message->set_success($msg);
       } else {
         $errors = "Subhanallah QRCode tidak terdaftar di System";
         $this->system_message->set_error($errors);
@@ -451,8 +301,7 @@ class Qrcode_app extends Admin_Controller
       // proceed to create user
       $user = $this->ion_auth->user()->row();
       $data1 = $this->Qrcode_m->getApiOneMustahik($qrcode);
-      $data2 = $this->Qrcode_m->getApiGetOneCouponMuzakih($qrcode);
-      $data3 = $this->Qrcode_m->getApiGetCouponQr($qrcode);
+
 
       //var_dump($data1);
 
@@ -472,20 +321,6 @@ class Qrcode_app extends Admin_Controller
           $msg = "Data Mustahik Ditemukan Pengambilan  : BELUM DIJADWALKAN";
           $this->system_message->set_success($msg);
         }
-      } elseif ($data2) {
-        $data = $data2;
-        $jenis = "MUDHOHI";
-        $msg = "Data Mudhohi Ditemukan";
-        $this->system_message->set_success($msg);
-      } elseif ($data3) {
-        $data = $data3;
-        $jenis = "KUPON";
-        if ($isAllowedList) {
-          $msg = "Data Kupon Ditemukan Pengambilan  : $isAllowedList->lokasi Tangal/Jam : $isAllowedList->start_datetime";
-        } else {
-          $msg = "Data Kupon Ditemukan Pengambilan  : BELUM DIJADWALKAN";
-        }
-        $this->system_message->set_success($msg);
       } else {
         $errors = "Subhanallah QRCode tidak terdaftar di System";
         $this->system_message->set_error($errors);

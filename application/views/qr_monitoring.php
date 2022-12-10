@@ -33,22 +33,22 @@ body {
                     <tr>
                         <td align="left" style="width:15%">
 
-                            <img src="<?= base_url('assets/dist/images/monitoring.png') ?>"
-                                style="width:200px;padding-left:10px;padding-right:10px;" alt="">
+                            <img src="<?= REMOTE_URL ?>/assets/dist/images/mrkr_logo.png"
+                                style="width:250px;padding-left:10px;padding-right:10px;" alt="">
                         </td>
                         <td align="center" style="width:70%">
                             <strong>
-                                <div style="font-size:28px;">Monitoring Status Penyaluran Sembako Murah MRBJ
+                                <div style="font-size:28px;">Monitoring Status Penyaluran Sembako
                                     <br>
                                 </div>
-                                <div style="font-size:32px;">MASJID RAYA BINTARO JAYA (MRBJ) <br>www.mrbjtangsel.org
+                                <div style="font-size:32px;">MASJID RAYA KEBAYORAN RESIDENCE(MRKR)
+                                    <br>www.mrkr.org
                                 </div>
                             </strong>
 
                         </td>
                         <td align="right" style="width:15%">
-                            <img src="https://zis.mrbjtangsel.org/assets/dist/images/laz_mrbj.png"
-                                style="width:150px;padding-left:10px;padding-right:10px;" alt="">
+
                             <img src=" https://zis.mrbjtangsel.org/assets/dist/images/coresystem_mrbj.png"
                                 style="width:200px;padding-left:10px;padding-right:10px;" alt="">
                         </td>
@@ -77,7 +77,6 @@ body {
                                         <th>Lokasi</th>
                                         <th>
                                             <center>
-
                                                 Progress
                                             </center>
                                         </th>
@@ -162,7 +161,7 @@ body {
                                         <td>
                                             <center>
                                                 <span class="digital">
-                                                    <b> <?= $r->kupon ?> / <?= $r->kantong ?> </b>
+                                                    <b> <?= $r->kupon ?> </b>
                                                 </span>
 
                                             </center>
@@ -171,7 +170,7 @@ body {
                                             <center>
                                                 <span class="digital">
                                                     <b>
-                                                        <?= $r->digunakan ?>/<?= $r->digunakan_kantong ?>
+                                                        <?= $r->digunakan ?>
 
                                                     </b>
                                                 </span>
@@ -182,7 +181,7 @@ body {
                                                 <span class="digital">
                                                     <b>
                                                         <?= $r->kupon - $r->digunakan ?>
-                                                        /<?= $r->kantong - $r->digunakan_kantong ?>
+
                                                     </b>
                                                 </span>
 
@@ -201,13 +200,20 @@ body {
                                             </span>
                                         </td>
                                         <td>
+                      <center>
+                                                <span class=" digital">
+                                                    <b> <?=  number_format(floatval($digunakan/$kupon)*100,2) ?>%</b>
+                                                </span>
+
+                                            </center>
+
 
                                         </td>
 
                                         <td>
                                             <center>
                                                 <span class=" digital">
-                                                    <b> <?= $kupon ?>/<?= $kantong ?></b>
+                                                    <b> <?= $kupon ?></b>
                                                 </span>
 
                                             </center>
@@ -216,7 +222,7 @@ body {
                                         <td>
                                             <center>
                                                 <span class="digital">
-                                                    <b> <?= $digunakan ?>/<?= $digunakan_kantong ?> </b>
+                                                    <b> <?= $digunakan ?> </b>
                                                 </span>
 
                                             </center>
@@ -225,7 +231,7 @@ body {
                                         <td>
                                             <center>
                                                 <span class="digital">
-                                                    <b> <?= $sisa ?>/<?= $sisa_kantong ?>
+                                                    <b> <?= $sisa ?>
                                                     </b>
                                                 </span>
                                             </center>

@@ -77,6 +77,7 @@ $config['ci_bootstrap'] = array(
 				'Monitoring'				=> 'monitoring',
 				'Sudah Scan'				=> 'qrcode_app/sudah_scan',
 				'Belum Scan'				=> 'qrcode_app/belum_scan',
+				'Qr Boleh Scan'				=> 'qrcode_app/boleh_scan',
 			)
 		),
 
@@ -122,6 +123,7 @@ $config['ci_bootstrap'] = array(
 		'util/backup_db'			=> array('webmaster'),
 		'util/restore_db'			=> array('webmaster'),
 		'util/remove_db'			=> array('webmaster'),
+		'qrcode_app/boleh_scan'			=> array('webmaster'),
 	),
 
 	// AdminLTE settings

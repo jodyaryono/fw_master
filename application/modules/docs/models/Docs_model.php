@@ -1,5 +1,5 @@
-<?php
-
-class Docs_model extends MY_Model {
-
-}
+<?php
+
+class Docs_model extends MY_Model {
+
+}

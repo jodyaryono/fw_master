@@ -1,4 +1,4 @@
-<?php 
-
-class User_model extends MY_Model {
+<?php 
+
+class User_model extends MY_Model {
 }
