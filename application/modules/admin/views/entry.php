@@ -34,7 +34,28 @@
 
             <div class="col-md-12">
 
+
                 <td colspan="3" style="align:center"><?php echo $form->messages(); ?></td>
+                <?php if ($has_error) : ?>
+                    <audio id="errorSound">
+                        <source src="<?= base_url('assets/sound/wrong.mp3') ?>" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <script>
+                        var audio = document.getElementById("errorSound");
+                        audio.play();
+                    </script>
+                <?php endif; ?>
+                <?php if ($error_free) : ?>
+                    <audio id="successSound">
+                        <source src="<?= base_url('assets/sound/success.mp3') ?>" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <script>
+                        var audio = document.getElementById("successSound");
+                        audio.play();
+                    </script>
+                <?php endif; ?>
 
             </div>
 
