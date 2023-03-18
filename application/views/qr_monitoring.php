@@ -1,29 +1,29 @@
 <style>
-body {
-    /* background-image: url('<//?= base_url('assets/dist/images/bg.png') ?>'); */
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-}
+    body {
+        /* background-image: url('<//?= base_url('assets/dist/images/bg.png') ?>'); */
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
 
-@font-face {
-    font-family: DigitalDismay;
-    src: url("<?= base_url('assets/dist/fonts/DS-DIGIB.TTF') ?>") format("opentype");
-}
+    @font-face {
+        font-family: DigitalDismay;
+        src: url("<?= base_url('assets/dist/fonts/DS-DIGIB.TTF') ?>") format("opentype");
+    }
 
-.digital {
-    font-family: DigitalDismay;
-    font-size: 54px;
-}
+    .digital {
+        font-family: DigitalDismay;
+        font-size: 54px;
+    }
 
-.digital-sm {
-    font-family: DigitalDismay;
-    font-size: 40px;
-}
+    .digital-sm {
+        font-family: DigitalDismay;
+        font-size: 40px;
+    }
 
-.progress-bar {
-    background-color: #28a745 !important;
-}
+    .progress-bar {
+        background-color: #28a745 !important;
+    }
 </style>
 <div class="row" style="margin:10px;">
     <div class="col-md-12">
@@ -33,8 +33,7 @@ body {
                     <tr>
                         <td align="left" style="width:15%">
 
-                            <img src="<?= REMOTE_URL ?>/assets/dist/images/mrkr_logo.png"
-                                style="width:250px;padding-left:10px;padding-right:10px;" alt="">
+                            <img src="<?= REMOTE_URL ?>/assets/dist/images/mrkr_logo.png" style="width:250px;padding-left:10px;padding-right:10px;" alt="">
                         </td>
                         <td align="center" style="width:70%">
                             <strong>
@@ -49,8 +48,7 @@ body {
                         </td>
                         <td align="right" style="width:15%">
 
-                            <img src=" https://zis.mrbjtangsel.org/assets/dist/images/coresystem_mrbj.png"
-                                style="width:200px;padding-left:10px;padding-right:10px;" alt="">
+                            <img src=" https://zis.mrbjtangsel.org/assets/dist/images/coresystem_mrbj.png" style="width:200px;padding-left:10px;padding-right:10px;" alt="">
                         </td>
 
                     </tr>
@@ -63,8 +61,7 @@ body {
                         <center>
                             <h1 class="box-title" style="font-family:DigitalDismay;font-size:54px">
                                 <span id="timestamp"></span>
-                                update in <span style="background-color:red;color:white"
-                                    id="time"></span>&nbsp;Second(s)
+                                update in <span style="background-color:red;color:white" id="time"></span>&nbsp;Second(s)
 
                         </center>
                     </div>
@@ -74,7 +71,12 @@ body {
                                 <thead>
                                     <tr style="background-color:greenyellow">
                                         <th style="width: 10px">#</th>
-                                        <th>Lokasi</th>
+
+                                        <th>
+                                            <center>
+                                                Jenis
+                                            </center>
+                                        </th>
                                         <th>
                                             <center>
                                                 Progress
@@ -88,12 +90,17 @@ body {
 
                                         <th>
                                             <center>
-                                                Kupon Digunakan
+                                                Pendaftaran
                                             </center>
                                         </th>
                                         <th>
                                             <center>
-                                                kupon Sisa
+                                                Pengambilan
+                                            </center>
+                                        </th>
+                                        <th>
+                                            <center>
+                                                Sisa
                                             </center>
                                         </th>
 
@@ -104,105 +111,111 @@ body {
                                     $total = 0;
                                     $i = 0;
                                     $kupon = 0;
-                                    $digunakan = 0;
+                                    $pendaftaran = 0;
+                                    $pengambilan = 0;
                                     $digunakan_kantong = 0;
                                     $progress = 0;
                                     $sisa = 0;
                                     $lokasi = "";
                                     $kantong = 0;
                                     $sisa_kantong = 0;
-                                    $no = "";
                                     $it = 0;
                                     ?>
                                     <?php foreach ($d as $r) : ?>
-                                    <?php
+                                        <?php
 
                                         $kupon += $r->kupon;
-                                        $kantong += $r->kantong;
-                                        $digunakan += $r->digunakan;
-                                        $digunakan_kantong += $r->digunakan_kantong;
+                                        //$kantong += $r->kantong;
+                                        $pendaftaran += $r->pendaftaran;
+                                        $pengambilan += $r->pengambilan;
+                                        //$digunakan_kantong += $r->digunakan_kantong;
                                         $progress += $r->progress;
-                                        $sisa += $r->kupon - $r->digunakan;
+                                        $sisa += $r->kupon - $r->pengambilan;
 
-                                        $sisa_kantong += $r->kantong - $r->digunakan_kantong;
+                                        //$sisa_kantong += $r->kantong - $r->digunakan_kantong;
                                         $it++;
 
-                                        if ($lokasi !== $r->lokasi) {
-                                            $lokasi = $r->lokasi;
-                                            $i++;
-                                            $no = $i;
-                                        } else {
-                                            $lokasi = "";
-                                            $no = "";
-                                        }
+
 
                                         ?>
-                                    <tr>
-                                        <td>
-                                            <?= $no ?>
-                                        </td>
-                                        <td>
+                                        <tr>
 
-                                            <b>
-                                                <?php echo $lokasi; ?>
+                                            <td>
+                                                <?= $it ?>
+                                            </td>
+                                            <td>
+                                                <?= $r->source ?>
+                                            </td>
 
-                                            </b>
-
-                                        </td>
-
-                                        <td>
-                                            <?= "" . $r->source . " ( <span class='digital'><b>" . number_format(floatval($r->progress), 2) . "%</b></span>) " ?>
-                                            <div class="progress progress-sm">
-                                                <div class="progress-bar progress-bar-primary progress-bar-striped"
-                                                    style="width: <?= $r->progress ?>%">
+                                            <td>
+                                                <?= "( <span class='digital'><b>" . number_format(floatval($r->progress), 2) . "%</b></span>) " ?>
+                                                <div class="progress progress-sm">
+                                                    <div class="progress-bar progress-bar-primary progress-bar-striped" style="width: <?= $r->progress ?>%">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <center>
-                                                <span class="digital">
-                                                    <b> <?= $r->kupon ?> </b>
-                                                </span>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <span class="digital">
+                                                        <b> <?= $r->kupon ?> </b>
+                                                    </span>
 
-                                            </center>
-                                        </td>
-                                        <td>
-                                            <center>
-                                                <span class="digital">
-                                                    <b>
-                                                        <?= $r->digunakan ?>
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <span class="digital">
+                                                        <b> <?= $r->pendaftaran ?> </b>
+                                                    </span>
 
-                                                    </b>
-                                                </span>
-                                            </center>
-                                        </td>
-                                        <td>
-                                            <center>
-                                                <span class="digital">
-                                                    <b>
-                                                        <?= $r->kupon - $r->digunakan ?>
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <span class="digital">
+                                                        <b>
+                                                            <?= $r->pengambilan ?>
 
-                                                    </b>
-                                                </span>
+                                                        </b>
+                                                    </span>
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <span class="digital">
+                                                        <b>
+                                                            <?= $r->sisa ?>
 
-                                            </center>
-                                        </td>
+                                                        </b>
+                                                    </span>
 
-                                    </tr>
+                                                </center>
+
+                                            </td>
+
+                                        </tr>
+
                                     <?php endforeach; ?>
                                 </tbody>
                                 <tfoot>
                                     <tr style="background-color:black;color:greenyellow">
+
                                         <td></td>
-                                        <td> <span class="digital">
-                                                <b>TOTAL
-                                                </b>
-                                            </span>
+                                        <td>
+                                            <center>
+                                                <span class=" digital">
+                                                    <b>
+                                                        TOTAL:</b>
+                                                </span>
+
+                                            </center>
+
+
                                         </td>
                                         <td>
-                      <center>
+                                            <center>
                                                 <span class=" digital">
-                                                    <b> <?=  number_format(floatval($digunakan/$kupon)*100,2) ?>%</b>
+                                                    <b><?= number_format(floatval($pengambilan / $kupon) * 100, 2) ?>%</b>
                                                 </span>
 
                                             </center>
@@ -222,7 +235,16 @@ body {
                                         <td>
                                             <center>
                                                 <span class="digital">
-                                                    <b> <?= $digunakan ?> </b>
+                                                    <b> <?= $pendaftaran ?> </b>
+                                                </span>
+
+                                            </center>
+
+                                        </td>
+                                        <td>
+                                            <center>
+                                                <span class="digital">
+                                                    <b> <?= $pengambilan ?> </b>
                                                 </span>
 
                                             </center>
@@ -254,31 +276,31 @@ body {
 
 
 <script type="text/javascript">
-$(document).ready(function() {
-    var time = 60
-    setInterval(function() {
-        time--;
-        $('#time').html(time);
-        if (time === 0) {
-            $(document).ajaxStart(function() {
-                $.LoadingOverlay("show");
+    $(document).ready(function() {
+        var time = 60
+        setInterval(function() {
+            time--;
+            $('#time').html(time);
+            if (time === 0) {
+                $(document).ajaxStart(function() {
+                    $.LoadingOverlay("show");
+                });
+                location.reload()
+            };
+
+            $.ajax({
+                url: '<?= base_url('monitoring/timestamp') ?>',
+                success: function(data) {
+                    $('#timestamp').html(data);
+                },
             });
-            location.reload()
-        };
-
-        $.ajax({
-            url: '<?= base_url('monitoring/timestamp') ?>',
-            success: function(data) {
-                $('#timestamp').html(data);
-            },
-        });
-    }, 1000);
-});
+        }, 1000);
+    });
 
 
 
-function cache_clear() {
-    window.location.reload(true);
-    //window.location.reload(); use this if you do not remove cache
-}
+    function cache_clear() {
+        window.location.reload(true);
+        //window.location.reload(); use this if you do not remove cache
+    }
 </script>

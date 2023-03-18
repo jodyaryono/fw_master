@@ -71,13 +71,12 @@ $config['ci_bootstrap'] = array(
 			'icon'		=> 'fa fa-users',
 			'children'  => array(
 				'Test QR'						=> 'qrcode_app/test',
-				'Test Webcam'						=> 'qrcode_app/test_webcam',
-				'Scan webcam'							=> 'qrcode_app/entry_webcam',
+				// 'Test Webcam'						=> 'qrcode_app/test_webcam',
+				// 'Scan webcam'							=> 'qrcode_app/entry_webcam',
 				'Scan/Entry'							=> 'qrcode_app/entry',
-				'Monitoring'				=> 'monitoring',
-				'Sudah Scan'				=> 'qrcode_app/sudah_scan',
-				'Belum Scan'				=> 'qrcode_app/belum_scan',
-				'Qr Boleh Scan'				=> 'qrcode_app/boleh_scan',
+				'Scan/Pengambilan'							=> 'qrcode_app/pengambilan',
+				'Monitoring'				=> '../monitoring',
+				'Data Scan'				=> 'qrcode_app/data_scan',
 			)
 		),
 
@@ -124,6 +123,8 @@ $config['ci_bootstrap'] = array(
 		'util/restore_db'			=> array('webmaster'),
 		'util/remove_db'			=> array('webmaster'),
 		'qrcode_app/boleh_scan'			=> array('webmaster'),
+		'qrcode_app/pengambilan'			=> array('webmaster', 'pengambilan'),
+		'qrcode_app/entry'			=> array('webmaster', 'pendaftaran'),
 	),
 
 	// AdminLTE settings

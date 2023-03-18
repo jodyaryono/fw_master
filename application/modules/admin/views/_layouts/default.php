@@ -1,3 +1,23 @@
+<style>
+	.blink {
+		animation: blink 1s infinite;
+		color: red;
+	}
+
+	@keyframes blink {
+		0% {
+			opacity: 1;
+		}
+
+		50% {
+			opacity: 0;
+		}
+
+		100% {
+			opacity: 1;
+		}
+	}
+</style>
 <div class="wrapper">
 
 	<?php $this->load->view('_partials/navbar'); ?>

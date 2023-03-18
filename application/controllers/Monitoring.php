@@ -16,7 +16,7 @@ class Monitoring extends MY_Controller
   {
 
     $this->mViewData['d'] = $this->Qrcode_m->monitoring();
-    $this->mViewData['d2'] = $this->Qrcode_m->monitoringNonMRBJ();
+    //$this->mViewData['d2'] = $this->Qrcode_m->monitoringNonMRBJ();
 
     $this->render('qr_monitoring', 'empty');
   }
