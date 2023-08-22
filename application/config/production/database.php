@@ -75,10 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'mrbjtangsel.org',
-	'username' => 'u0502216_mrkr',
-	'password' => 'WF!m8E3RWK%{',
-	'database' => 'u0502216_mrkr-distribusi',
+	'hostname' => 'localhost',
+	'username' => 'root',
+	'password' => '423525',
+	'database' => 'db_fwm',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
